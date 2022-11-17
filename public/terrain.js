@@ -1,10 +1,11 @@
 class Terrain extends SObject {
-    constructor(w, d, x = 0, y = 0, z = 0, rows, cols) {
+    constructor(w, d, x = 0, y = 0, z = 0, rows, cols,boxSize) {
         super(w, 0, d, x, y, z)
         this.rows = rows;
         this.cols = cols;
         this.deltaWidth = this.width / this.cols;
         this.deltaHeight = this.depth / this.rows;
+        this.boxSize=boxSize;
     }
 
     render() {
@@ -16,7 +17,7 @@ class Terrain extends SObject {
             for (let row = 0; row < this.rows; row++) {
                 push()
                 translate(this.deltaWidth * col + this.deltaWidth / 2, this.deltaHeight * row + this.deltaHeight / 2, 0)
-                box(100);
+                box(this.boxSize);
                 pop()
             }
         }
