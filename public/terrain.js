@@ -23,4 +23,20 @@ class Terrain extends SObject {
         }
         pop()
     }
+
+    render(canvas) {
+        canvas.push()
+        canvas.translate(this.location.x, this.location.y, this.location.z)
+        canvas.rotateX(90);
+        canvas.translate(-this.width / 2, -this.depth / 2, 0);
+        for (let col = 0; col < this.cols; col++) {
+            for (let row = 0; row < this.rows; row++) {
+                canvas.push()
+                canvas.translate(this.deltaWidth * col + this.deltaWidth / 2, this.deltaHeight * row + this.deltaHeight / 2, 0)
+                canvas.box(this.boxSize);
+                canvas.pop()
+            }
+        }
+        canvas.pop()
+    }
 }

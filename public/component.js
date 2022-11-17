@@ -43,6 +43,22 @@ class Component extends SObject{
         }
         pop()
     }
+
+    render(canvas){
+        this.update();
+        canvas.push()
+        canvas.translate(this.location.x,this.location.y,this.location.z);
+        canvas.rotateX( this.rotation.x);
+        canvas.rotateY( this.rotation.y);
+        canvas.rotateZ( this.rotation.z);
+        canvas.box(this.width,this.height,this.depth);
+        //console.log("lines"+this.lineCubes.length)
+        for(let i=0; i<this.lineCubes.length;i++){
+            this.lineCubes[i].update();
+            this.lineCubes[i].render(canvas);
+        }
+        canvas.pop()
+    }
    
 
 }

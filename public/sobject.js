@@ -29,4 +29,14 @@ class SObject{
         pop()
     }
 
+    render(canvas){
+        canvas.push()
+        canvas.translate(this.location.x,this.location.y,this.location.z);
+        canvas.rotateX( this.rotation.x);
+        canvas.rotateY( this.rotation.y);
+        canvas.rotateZ( this.rotation.z);
+        canvas.box(this.width,this.height,this.depth);
+        canvas.pop()
+    }
+
 }

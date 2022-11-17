@@ -13,7 +13,7 @@ let angle = 0;
 let changePosition = false;
 let fft;
 let terrain;
-
+let sobject;
 let pg;
 
 function preload() {
@@ -45,7 +45,10 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(...canvasSize, WEBGL);
+    createCanvas(...canvasSize);
+    pg = createGraphics(...canvasSize, WEBGL);
+    pg.angleMode(DEGREES);
+    sobject = new SObject(100,100,100,0,0,0);
     component = new Component(250, 250, 250, 0, 0, -1000);
     lineCube = new LineObjects(1000, 100, -1000, 2, 100);
     terrain = new Terrain(10000,10000,0,1000,-1200-2000,20,20,450);
@@ -55,23 +58,28 @@ function setup() {
 
 function update() {
     let spectrum = fft.analyze();
-    let yaw = atan2((mouseX - width / 2), Math.abs(component.location.z));
+   let yaw = atan2((mouseX - width / 2), Math.abs(component.location.z));
     let pitch = atan2(-(mouseY - height / 2), Math.abs(component.location.z));
     component.setRotation(pitch, yaw, 0);
+    //sobject.setRotation(0,0,angle);
     lineCube.setRotation(0, 0, angle);
-    angle += 0.1;
+    angle += 1;
 
 }
 
 function draw() {
     let bgcolor = [0];
-    background(...bgcolor);
+    background(125);
+    pg.clear();
+    pg.background(...bgcolor);
     update()
+    //sobject.render(pg);
     lineCube.update();
-    lineCube.render();
-    terrain.render();
-    component.render();
+    lineCube.render(pg);
+    terrain.render(pg);
+    component.render(pg);
     //VFX
+    image(pg, 0, 0);
 
 
 }
@@ -90,4 +98,6 @@ function draw() {
 window.onresize = () => {
     canvasSize = [window.innerWidth, window.innerHeight]
     resizeCanvas(canvasSize[0], canvasSize[1])
+    pg = createGraphics(...canvasSize, WEBGL);
+    pg.angleMode(DEGREES);
 }

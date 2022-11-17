@@ -29,4 +29,18 @@ class LineObjects extends SObject{
         pop()
         this.myObjects=[];
     }
+
+    render(canvas){
+        canvas.push()
+        canvas.translate(this.location.x,this.location.y,this.location.z);
+        canvas.rotateX( this.rotation.x);
+        canvas.rotateY( this.rotation.y);
+        canvas.rotateZ( this.rotation.z);
+        console.log("canvas rendering");
+        for(let i=0;i<this.myObjects.length;i++){
+            this.myObjects[i].render(canvas);
+        }
+        canvas.pop()
+        this.myObjects=[];
+    }
 }
