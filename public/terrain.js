@@ -6,6 +6,17 @@ class Terrain extends SObject {
         this.deltaWidth = this.width / this.cols;
         this.deltaHeight = this.depth / this.rows;
         this.boxSize=boxSize;
+        this.signal=new Array(rows).fill(0);
+       
+    }
+
+    inputSignal(signal){
+        if(frameCount%4!=0){return }
+        for(let i=this.signal.length-1; i>0;i--){
+            this.signal[i]=lerp(this.signal[i],this.signal[i-1],0.9);
+        }
+        this.signal[0]=lerp(this.signal[0],signal,0.9);
+        console.log(this.signal);
     }
 
     render() {
@@ -25,6 +36,7 @@ class Terrain extends SObject {
     }
 
     render(canvas) {
+        
         canvas.push()
         canvas.translate(this.location.x, this.location.y, this.location.z)
         canvas.rotateX(90);
@@ -32,7 +44,8 @@ class Terrain extends SObject {
         for (let col = 0; col < this.cols; col++) {
             for (let row = 0; row < this.rows; row++) {
                 canvas.push()
-                canvas.translate(this.deltaWidth * col + this.deltaWidth / 2, this.deltaHeight * row + this.deltaHeight / 2, 0)
+                let depth= map(this.signal[this.signal.length-1-row],0,0.8,0,250)
+                canvas.translate(this.deltaWidth * col + this.deltaWidth / 2, this.deltaHeight * row + this.deltaHeight / 2, depth)
                 canvas.box(this.boxSize);
                 canvas.pop()
             }

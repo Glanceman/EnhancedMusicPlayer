@@ -19,7 +19,7 @@ class Component extends SObject {
             let frequency = Math.round(map(i, 0, this.lineCubes.length, 0, spectrum.length / 10));
             let frequencyAmp = Math.round(map(spectrum[frequency], 0, 255, 0, 5));
             let angle = round(map(i, 0, 10, 0, 360)) + this.counter;
-            let r = 500
+            let r = 400
             let rX = r * cos(angle);
             let rY = r * sin(angle);
             //console.log("Amp: " + frequency + "Max Frequency: " + spectrum.length);

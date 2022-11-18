@@ -13,7 +13,7 @@ let angle = 0;
 let changePosition = false;
 let fft;
 let terrain;
-
+let amplitude;
 let pg;
 
 function preload() {
@@ -127,10 +127,11 @@ function setup() {
         songs[currentSongIndex].musicSequence.jump(map(progressSlider.value(),0,1,0,duration));
     })
 
-    component = new Component(250, 250, 250, 0, 0, -1000);
-    lineCube = new LineObjects(1000, 100, -1000, 2, 100);
-    terrain = new Terrain(10000, 10000, 0, 1000, -1200 - 2000, 20, 20, 450);
+    component = new Component(250, 250, 250, 0, 0, -1500);
+    //lineCube = new LineObjects(1000, 100, -1000, 2, 100);
+    terrain = new Terrain(10000, 10000, 0, 1000, -1200 - 4000, 24, 24, 400);
     fft = new p5.FFT(0.8, 256);
+    amplitude = new p5.Amplitude();
 }
 
 
@@ -139,14 +140,15 @@ function update() {
     if(changePosition==false){
         progressSlider.value(map(currentPosition, 0, songs[currentSongIndex].musicSequence.duration(), 0, 1));
     }
-
+    let level = amplitude.getLevel();
+    terrain.inputSignal(level);
     let spectrum = fft.analyze();
     let yaw = atan2((mouseX - width / 2), Math.abs(component.location.z));
     let pitch = atan2(-(mouseY - height / 2), Math.abs(component.location.z));
     component.setRotation(pitch, yaw, 0);
     console.log(spectrum.length);
     component.update(spectrum);
-    lineCube.setRotation(0, 0, angle);
+    //lineCube.setRotation(0, 0, angle);
     angle += 1;
 
 }
@@ -158,8 +160,8 @@ function draw() {
     pg.background(...bgcolor);
     update()
 
-    lineCube.update();
-    lineCube.render(pg);
+    // lineCube.update();
+    // lineCube.render(pg);
     terrain.render(pg);
     component.render(pg);
     //VFX
