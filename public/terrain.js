@@ -11,12 +11,12 @@ class Terrain extends SObject {
     }
 
     inputSignal(signal){
-        if(frameCount%4!=0){return }
+        if(frameCount%3!=0){return }
         for(let i=this.signal.length-1; i>0;i--){
             this.signal[i]=lerp(this.signal[i],this.signal[i-1],0.9);
         }
         this.signal[0]=lerp(this.signal[0],signal,0.9);
-        console.log(this.signal);
+        //console.log(this.signal);
     }
 
     render() {
@@ -44,7 +44,9 @@ class Terrain extends SObject {
         for (let col = 0; col < this.cols; col++) {
             for (let row = 0; row < this.rows; row++) {
                 canvas.push()
-                let depth= map(this.signal[this.signal.length-1-row],0,0.8,0,250)
+                let depth= map(this.signal[this.signal.length-1-row],0.05,0.8,-500,500)
+                canvas.colorMode(HSB)
+                canvas.fill(180,map(depth,-500,500,20,255),map(depth,-500,500,20,255));
                 canvas.translate(this.deltaWidth * col + this.deltaWidth / 2, this.deltaHeight * row + this.deltaHeight / 2, depth)
                 canvas.box(this.boxSize);
                 canvas.pop()

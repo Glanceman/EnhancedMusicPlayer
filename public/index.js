@@ -1,5 +1,6 @@
 
 let canvasSize = [window.innerWidth, window.innerHeight]
+let videoSize = [1920, 1080]
 let songs = [];
 let currentSongIndex = 0;
 let btns = [];
@@ -15,7 +16,9 @@ let fft;
 let terrain;
 let amplitude;
 let pg;
-
+let faceapi;
+let video;
+let detectionBox;
 function preload() {
     let song = loadSound('./assets/bensound-sadday.mp3');
     let song1 = loadSound('./assets/bensound-enigmatic.mp3');
@@ -48,6 +51,26 @@ function setup() {
     createCanvas(...canvasSize);
     pg = createGraphics(...canvasSize, WEBGL);
     pg.angleMode(DEGREES);
+    detectionBox = [width / 2, height / 2, 0, 0];
+    let constraints = {
+        video: {
+          mandatory: {
+            minWidth: 1280,
+            minHeight: 720
+          },
+        },
+      };
+    video = createCapture(constraints,VIDEO);
+    video.size(...videoSize);
+    const detection_options = {
+        withLandmarks: true,
+        withDescriptors: false,
+    }
+    faceapi = ml5.faceApi(video, detection_options, () => {
+        console.log("Model Ready");
+        faceapi.detect(gotResults)
+    });
+
 
     let playbtn = new SButton(width / 2, height * 9 / 10, 100, 100, imgs.playbtn, imgs.pasuebtn);
     playbtn.onPress = () => {
@@ -113,23 +136,23 @@ function setup() {
     progressSlider = createSlider(0, 1, 1, 0.001);
     progressSlider.position(width / 2 - width * 0.8 * 0.5, height * 8 / 10)
     progressSlider.style("width", width * 0.8 + 'px');
-    progressSlider.mousePressed(()=>{
-        changePosition=true;
+    progressSlider.mousePressed(() => {
+        changePosition = true;
         console.log("Slider Press")
     })
-    progressSlider.mouseMoved(()=>{
-        if(changePosition==false) return;
-       
+    progressSlider.mouseMoved(() => {
+        if (changePosition == false) return;
+
     })
-    progressSlider.mouseReleased(()=>{
-        changePosition=false;
+    progressSlider.mouseReleased(() => {
+        changePosition = false;
         let duration = songs[currentSongIndex].musicSequence.duration();
-        songs[currentSongIndex].musicSequence.jump(map(progressSlider.value(),0,1,0,duration));
+        songs[currentSongIndex].musicSequence.jump(map(progressSlider.value(), 0, 1, 0, duration));
     })
 
     component = new Component(250, 250, 250, 0, 0, -1500);
     //lineCube = new LineObjects(1000, 100, -1000, 2, 100);
-    terrain = new Terrain(10000, 10000, 0, 1000, -1200 - 4000, 24, 24, 400);
+    terrain = new Terrain(10000, 10000, 0, 1000, -1200 - 4000, 30, 30, 350);
     fft = new p5.FFT(0.8, 256);
     amplitude = new p5.Amplitude();
 }
@@ -137,16 +160,16 @@ function setup() {
 
 function update() {
     let currentPosition = songs[currentSongIndex].musicSequence.currentTime();
-    if(changePosition==false){
+    if (changePosition == false) {
         progressSlider.value(map(currentPosition, 0, songs[currentSongIndex].musicSequence.duration(), 0, 1));
     }
     let level = amplitude.getLevel();
     terrain.inputSignal(level);
     let spectrum = fft.analyze();
-    let yaw = atan2((mouseX - width / 2), Math.abs(component.location.z));
-    let pitch = atan2(-(mouseY - height / 2), Math.abs(component.location.z));
+    let yaw = atan2((detectionBox[0] + detectionBox[2] / 2 - width / 2), Math.abs(component.location.z));
+    let pitch = atan2(-(detectionBox[1] + detectionBox[3] / 2 - height / 2), Math.abs(component.location.z));
     component.setRotation(pitch, yaw, 0);
-    console.log(spectrum.length);
+    //console.log(spectrum.length);
     component.update(spectrum);
     //lineCube.setRotation(0, 0, angle);
     angle += 1;
@@ -166,6 +189,20 @@ function draw() {
     component.render(pg);
     //VFX
     image(pg, 0, 0);
+
+    // {
+    //     push()
+    //     translate(videoSize[0], 0);
+    //     scale(-1, 1)
+    //     image(video, 0, 0, videoSize[0], videoSize[1]);
+    //     pop()
+
+    //     push()
+    //     noFill()
+    //     rectMode(CENTER);
+    //     rect(detectionBox[0] + detectionBox[2] / 2, detectionBox[1] + detectionBox[3] / 2, detectionBox[2], detectionBox[3])
+    //     pop()
+    // }
 
     push()
     textSize(64);
@@ -188,6 +225,22 @@ function draw() {
 //         background(0, 255, 0);
 //     }
 // }
+
+function gotResults(err, result) {
+    if (err) {
+        console.log(err)
+        return
+    }
+    //console.log(result)
+    if (result.length != 0) {
+        detectionBox[0] = videoSize[0] - result[0].alignedRect._box._width - result[0].alignedRect._box._x
+        detectionBox[1] = result[0].alignedRect._box._y
+        detectionBox[2] = result[0].alignedRect._box._width;
+        detectionBox[3] = result[0].alignedRect._box._height;
+    }
+    console.log(detectionBox);
+    faceapi.detect(gotResults)
+}
 
 window.onresize = () => {
     canvasSize = [window.innerWidth, window.innerHeight]
