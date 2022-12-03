@@ -32,7 +32,7 @@ class Component extends SObject {
             this.lineCubes[i].setLocation(this.location.x + rX, this.location.y + rY, -100)
             this.lineCubes[i].setRotation(0, 0, angle + 90)
         }
-        this.faceIndex = level>0.2? 1 :0;
+        this.faceIndex = level>0.12? 1 :0;
         this.counter++;
     }
 

@@ -157,7 +157,7 @@ function setup() {
     component = new Component(250, 250, 250, 0, 0, -1500);
     component.setFaces(imgs.faces);
     //lineCube = new LineObjects(1000, 100, -1000, 2, 100);
-    terrain = new Terrain(20000, 10000, 0, 1500, -1500, 30, 50, 350);
+    terrain = new Terrain(20000, 10000, 0, 1500, -6000, 30, 50, 350);
     fft = new p5.FFT(0.8, 256);
     amplitude = new p5.Amplitude();
 }
