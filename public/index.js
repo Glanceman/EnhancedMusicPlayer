@@ -45,6 +45,10 @@ function preload() {
     imgs.stopbtn = loadImage("./assets/stop-button.png");
     imgs.nextbtn = loadImage("./assets/next.png")
     imgs.previousbtn = loadImage("./assets/previous.png")
+    imgs.audio=loadImage("./assets/audio.png");
+    imgs.faces=[];
+    imgs.faces[0]=loadImage("./assets/face0.png");
+    imgs.faces[1]=loadImage("./assets/face1.png");
 }
 
 function setup() {
@@ -127,7 +131,7 @@ function setup() {
     })
 
     panSlider = createSlider(-1, 1, 0, 0.1);
-    panSlider.position(width / 2 + 360, height * 9 / 10)
+    panSlider.position(width / 2 + 480, height * 9 / 10)
     panSlider.style("width", '100px');
     panSlider.mouseMoved(() => {
         songs[currentSongIndex].musicSequence.pan(panSlider.value())
@@ -151,6 +155,7 @@ function setup() {
     })
 
     component = new Component(250, 250, 250, 0, 0, -1500);
+    component.setFaces(imgs.faces);
     //lineCube = new LineObjects(1000, 100, -1000, 2, 100);
     terrain = new Terrain(20000, 10000, 0, 1500, -1500, 30, 50, 350);
     fft = new p5.FFT(0.8, 256);
@@ -168,9 +173,11 @@ function update() {
     let spectrum = fft.analyze();
     let yaw = atan2((detectionBox[0] + detectionBox[2] / 2 - width / 2), Math.abs(component.location.z));
     let pitch = atan2(-(detectionBox[1] + detectionBox[3] / 2 - height / 2), Math.abs(component.location.z));
+    // let yaw = atan2(mouseX-width/2,Math.abs(component.location.z));
+    // let pitch = atan2(-(mouseY-height/2), Math.abs(component.location.z));
     component.setRotation(pitch, yaw, 0);
     //console.log(spectrum.length);
-    component.update(spectrum);
+    component.update(spectrum,level);
     //lineCube.setRotation(0, 0, angle);
     angle += 1;
 
@@ -213,6 +220,14 @@ function draw() {
     btns.forEach((btn) => {
         btn.draw();
     })
+    image(imgs.audio,width / 2 + 180, height * 9 / 10-25,50,50)
+    push()
+    textSize(64);
+    textAlign(CENTER)
+    fill(255);
+    text("L", width / 2+450, height * 9 / 10+25);
+    text("R", width / 2+620, height * 9 / 10+25);
+    pop()
 }
 
 // function mousePressed() {

@@ -3,6 +3,7 @@ class Component extends SObject {
         super(w, h, d, x, y, z)
         this.lineCubes = [];
         this.counter = 0;
+        this.faceIndex=0;
         for (let i = 0; i < 10; i++) {
             let angle = round(map(i, 0, 10, 0, 360));
             let r = 500
@@ -14,7 +15,11 @@ class Component extends SObject {
         }
     }
 
-    update(spectrum) {
+    setFaces(faces) {
+        this.faces = faces;
+    }
+
+    update(spectrum,level) {
         for (let i = 0; i < this.lineCubes.length; i++) {
             let frequency = Math.round(map(i, 0, this.lineCubes.length, 0, spectrum.length / 10));
             let frequencyAmp = Math.round(map(spectrum[frequency], 0, 255, 0, 5));
@@ -27,6 +32,7 @@ class Component extends SObject {
             this.lineCubes[i].setLocation(this.location.x + rX, this.location.y + rY, -100)
             this.lineCubes[i].setRotation(0, 0, angle + 90)
         }
+        this.faceIndex = level>0.2? 1 :0;
         this.counter++;
     }
 
@@ -54,10 +60,17 @@ class Component extends SObject {
         canvas.rotateY(this.rotation.y);
         canvas.rotateZ(this.rotation.z);
         canvas.box(this.width, this.height, this.depth);
+
+        canvas.translate(0, 0, this.depth / 2 + 10)
+        canvas.push()
+        canvas.noStroke(0);
+        canvas.texture(this.faces[this.faceIndex]);
+        canvas.plane(this.width, this.height)
+        canvas.pop()
         //console.log("lines"+this.lineCubes.length)
         canvas.colorMode(HSB);
         for (let i = 0; i < this.lineCubes.length; i++) {
-            canvas.fill(40*i,255,255)
+            canvas.fill(40 * i, 255, 255)
             this.lineCubes[i].update();
             this.lineCubes[i].render(canvas);
         }
