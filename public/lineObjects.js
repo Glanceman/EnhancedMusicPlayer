@@ -36,7 +36,7 @@ class LineObjects extends SObject{
         canvas.rotateX( this.rotation.x);
         canvas.rotateY( this.rotation.y);
         canvas.rotateZ( this.rotation.z);
-        console.log("canvas rendering");
+        //console.log("canvas rendering");
         for(let i=0;i<this.myObjects.length;i++){
             this.myObjects[i].render(canvas);
         }

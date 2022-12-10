@@ -19,6 +19,14 @@ let pg;
 let faceapi;
 let video;
 let detectionBox;
+
+let classifier;
+// Label
+let label = 'listening...';
+// Teachable Machine model URL:
+//let soundModel = 'https://teachablemachine.withgoogle.com/models/mfU5Po_Y_/';
+let soundModel = window.location.href+"/models/";
+
 function preload() {
     let song = loadSound('./assets/bensound-sadday.mp3');
     let song1 = loadSound('./assets/bensound-enigmatic.mp3');
@@ -45,26 +53,29 @@ function preload() {
     imgs.stopbtn = loadImage("./assets/stop-button.png");
     imgs.nextbtn = loadImage("./assets/next.png")
     imgs.previousbtn = loadImage("./assets/previous.png")
-    imgs.audio=loadImage("./assets/audio.png");
-    imgs.faces=[];
-    imgs.faces[0]=loadImage("./assets/face0.png");
-    imgs.faces[1]=loadImage("./assets/face1.png");
+    imgs.audio = loadImage("./assets/audio.png");
+    imgs.faces = [];
+    imgs.faces[0] = loadImage("./assets/face0.png");
+    imgs.faces[1] = loadImage("./assets/face1.png");
+
+    classifier = ml5.soundClassifier(soundModel + 'model.json');
 }
 
 function setup() {
     createCanvas(...canvasSize);
+    console.log(soundModel);
     pg = createGraphics(...canvasSize, WEBGL);
     pg.angleMode(DEGREES);
     detectionBox = [width / 2, height / 2, 0, 0];
     let constraints = {
         video: {
-          mandatory: {
-            minWidth: 1280,
-            minHeight: 720
-          },
+            mandatory: {
+                minWidth: 1280,
+                minHeight: 720
+            },
         },
-      };
-    video = createCapture(constraints,VIDEO);
+    };
+    video = createCapture(constraints, VIDEO);
     video.size(...videoSize);
     const detection_options = {
         withLandmarks: true,
@@ -90,6 +101,21 @@ function setup() {
         }
     }
     btns.push(playbtn);
+
+    classifier.classify((err, res) => {
+        if (res[0].label == "Clap") {
+            console.log("Press play")
+            if (songs[currentSongIndex].musicSequence.isPlaying()) {
+                songs[currentSongIndex].musicSequence.pause();
+                playbtn.image = playbtn.initImg;
+            } else {
+                songs[currentSongIndex].musicSequence.setVolume(volSlider.value())
+                songs[currentSongIndex].musicSequence.pan(panSlider.value())
+                songs[currentSongIndex].musicSequence.play();
+                playbtn.image = playbtn.finalImg;
+            }
+        }
+    });
 
     let stopbtn = new SButton(width / 2 + 120, height * 9 / 10, 80, 80, imgs.stopbtn);
     stopbtn.onPress = () => {
@@ -177,7 +203,7 @@ function update() {
     // let pitch = atan2(-(mouseY-height/2), Math.abs(component.location.z));
     component.setRotation(pitch, yaw, 0);
     //console.log(spectrum.length);
-    component.update(spectrum,level);
+    component.update(spectrum, level);
     //lineCube.setRotation(0, 0, angle);
     angle += 1;
 
@@ -220,13 +246,13 @@ function draw() {
     btns.forEach((btn) => {
         btn.draw();
     })
-    image(imgs.audio,width / 2 + 180, height * 9 / 10-25,50,50)
+    image(imgs.audio, width / 2 + 180, height * 9 / 10 - 25, 50, 50)
     push()
     textSize(64);
     textAlign(CENTER)
     fill(255);
-    text("L", width / 2+450, height * 9 / 10+25);
-    text("R", width / 2+620, height * 9 / 10+25);
+    text("L", width / 2 + 450, height * 9 / 10 + 25);
+    text("R", width / 2 + 620, height * 9 / 10 + 25);
     pop()
 }
 
