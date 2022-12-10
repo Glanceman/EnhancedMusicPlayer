@@ -57,7 +57,8 @@ function preload() {
     imgs.faces = [];
     imgs.faces[0] = loadImage("./assets/face0.png");
     imgs.faces[1] = loadImage("./assets/face1.png");
-
+    
+    soundModel=soundModel.replace("/index.html","");
     classifier = ml5.soundClassifier(soundModel + 'model.json');
 }
 
