@@ -29,7 +29,7 @@ let soundModel = window.location.href+"/models/";
 
 function preload() {
     let song = loadSound('./assets/bensound-sadday.mp3');
-    let song1 = loadSound('./assets/bensound-enigmatic.mp3');
+    let song1 = loadSound('./assets/Swear-to-My-Bones.mp3');
     let song2 = loadSound('./assets/eye-water.mp3');
     songs.push(
         {
@@ -39,7 +39,7 @@ function preload() {
         },
         {
             id: 1,
-            name: "Enigmatic",
+            name: "Swear To My Bone",
             musicSequence: song1,
         },
         {
