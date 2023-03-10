@@ -6,4 +6,4 @@ Run the local server
 >npm run dev
 
 Link:
-[https://glanceman.github.io/SM2278-EnhancedMusicPlayer/]
+[Sample Link](https://glanceman.github.io/CinemaWeb/)
